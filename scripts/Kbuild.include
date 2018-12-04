@@ -184,12 +184,6 @@ ld-ifversion = $(shell [ $(ld-version) $(1) $(2) ] && echo $(3) || echo $(4))
 build := -f $(srctree)/scripts/Makefile.build obj
 
 ###
-# Shorthand for $(Q)$(MAKE) -f scripts/Makefile.dtbinst obj=
-# Usage:
-# $(Q)$(MAKE) $(dtbinst)=dir
-dtbinst := -f $(if $(KBUILD_SRC),$(srctree)/)scripts/Makefile.dtbinst obj
-
-###
 # Shorthand for $(Q)$(MAKE) -f scripts/Makefile.clean obj=
 # Usage:
 # $(Q)$(MAKE) $(clean)=dir
