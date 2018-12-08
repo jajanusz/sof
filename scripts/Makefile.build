@@ -92,7 +92,6 @@ endif
 # ---------------------------------------------------------------------------
 
 # Default is built-in, unless we know otherwise
-modkern_cflags = $(KBUILD_CFLAGS_KERNEL) $(CFLAGS_KERNEL))
 quiet_modtag := $(empty)   $(empty)
 
 quiet_cmd_cc_s_c = CC $(quiet_modtag)  $@
@@ -187,9 +186,6 @@ $(obj)/%.lst: $(src)/%.c FORCE
 
 # Compile assembler sources (.S)
 # ---------------------------------------------------------------------------
-
-modkern_aflags := $(KBUILD_AFLAGS_KERNEL) $(AFLAGS_KERNEL)
-
 quiet_cmd_cpp_s_S = CPP $(quiet_modtag) $@
 cmd_cpp_s_S       = $(CPP) $(a_flags) -o $@ $<
 
