@@ -272,8 +272,6 @@ include scripts/Kbuild.include
 KERNELVERSION = $(VERSION)$(if $(PATCHLEVEL),.$(PATCHLEVEL)$(if $(SUBLEVEL),.$(SUBLEVEL)))$(EXTRAVERSION)
 export VERSION PATCHLEVEL SUBLEVEL KERNELVERSION
 
-include scripts/subarch.include
-
 # Cross compiling and selecting different set of gcc/bin-utils
 # ---------------------------------------------------------------------------
 #
@@ -292,32 +290,20 @@ include scripts/subarch.include
 # Alternatively CROSS_COMPILE can be set in the environment.
 # Default value for CROSS_COMPILE is not to prefix executables
 # Note: Some architectures assign CROSS_COMPILE in their arch/*/Makefile
-ARCH		?= $(SUBARCH)
 
-# Architecture as present in compile.h
-UTS_MACHINE 	:= $(ARCH)
+host-arch = $(shell uname -m | sed -e s/i.86/x86/ -e s/x86_64/x86/ \
+				   -e s/sun4u/sparc64/ \
+				   -e s/arm.*/arm/ -e s/sa110/arm/ \
+				   -e s/s390x/s390/ -e s/parisc64/parisc/ \
+				   -e s/ppc.*/powerpc/ -e s/mips.*/mips/ \
+				   -e s/sh[234].*/sh/ -e s/aarch64.*/arm64/ \
+				   -e s/riscv.*/riscv/)
+
+# Just assume SRCARCH == ARCH
+# This should be changed if path to arch files should
+# use different value than $(ARCH)
+ARCH		?= $(host-arch)
 SRCARCH 	:= $(ARCH)
-
-# Additional ARCH settings for x86
-ifeq ($(ARCH),i386)
-        SRCARCH := x86
-endif
-ifeq ($(ARCH),x86_64)
-        SRCARCH := x86
-endif
-
-# Additional ARCH settings for sparc
-ifeq ($(ARCH),sparc32)
-       SRCARCH := sparc
-endif
-ifeq ($(ARCH),sparc64)
-       SRCARCH := sparc
-endif
-
-# Additional ARCH settings for sh
-ifeq ($(ARCH),sh64)
-       SRCARCH := sh
-endif
 
 KCONFIG_CONFIG	?= .config
 export KCONFIG_CONFIG
@@ -441,7 +427,7 @@ ifeq ($(config-targets),1)
 # Read arch specific Makefile to set KBUILD_DEFCONFIG as needed.
 # KBUILD_DEFCONFIG may point out an alternative default configuration
 # used for 'make defconfig'
-include arch/$(SRCARCH)/Makefile
+-include arch/$(SRCARCH)/Makefile
 export KBUILD_DEFCONFIG KBUILD_KCONFIG CC_VERSION_TEXT
 
 config: scripts_basic outputmakefile FORCE
@@ -479,7 +465,7 @@ all: # TODO
 ARCH_CPPFLAGS :=
 ARCH_AFLAGS :=
 ARCH_CFLAGS :=
-include arch/$(SRCARCH)/Makefile
+-include arch/$(SRCARCH)/Makefile
 
 ifeq ($(dot-config),1)
 ifeq ($(may-sync-config),1)
