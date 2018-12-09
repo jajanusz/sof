@@ -35,8 +35,8 @@ unexport GREP_OPTIONS
 # Most importantly: sub-Makefiles should only ever modify files in
 # their own directory. If in some directory we have a dependency on
 # a file in another dir (which doesn't happen often, but it's often
-# unavoidable when linking the built-in.a targets which finally
-# turn into vmlinux), we will call a sub make in that other dir, and
+# unavoidable when linking the built-in.a targets which finally turn
+# into final binary), we will call a sub make in that other dir, and
 # after that we are sure that everything which is in that other dir
 # is now up to date.
 #
@@ -359,7 +359,6 @@ PYTHON2		= python2
 PYTHON3		= python3
 
 NOSTDINC_FLAGS  =
-LDFLAGS_vmlinux =
 
 # Use USERINCLUDE when you must reference the UAPI directories only.
 USERINCLUDE    := \
@@ -453,7 +452,7 @@ config: scripts_basic outputmakefile FORCE
 
 else
 # ===========================================================================
-# Build targets only - this includes vmlinux, arch specific targets, clean
+# Build targets only - this includes main bin, arch specific targets, clean
 # targets and others. In general all targets except *config targets.
 
 PHONY += all
@@ -465,14 +464,6 @@ KBUILD_BUILTIN := 1
 
 export KBUILD_BUILTIN
 
-# Objects we will link into vmlinux / subdirs we need to visit
-init-y		:= init/
-drivers-y	:= drivers/ sound/ firmware/
-net-y		:= net/
-libs-y		:= lib/
-core-y		:= usr/
-virt-y		:= virt/
-
 ifeq ($(dot-config),1)
 include include/config/auto.conf
 endif
@@ -480,8 +471,8 @@ endif
 # The all: target is the default when no target is given on the
 # command line.
 # This allow a user to issue only 'make' to build a kernel
-# Defaults to vmlinux, but the arch makefile usually adds further targets
-all: vmlinux
+# Defaults to main binary, but the arch makefile usually adds further targets
+all: # TODO
 
 # The arch Makefile can set ARCH_{CPP,A,C}FLAGS to override the default
 # values of the respective KBUILD_* variables
@@ -529,89 +520,6 @@ KBUILD_CPPFLAGS += $(ARCH_CPPFLAGS) $(KCPPFLAGS)
 KBUILD_AFLAGS   += $(ARCH_AFLAGS)   $(KAFLAGS)
 KBUILD_CFLAGS   += $(ARCH_CFLAGS)   $(KCFLAGS)
 
-# Default kernel image to build when no specific target is given.
-# KBUILD_IMAGE may be overruled on the command line or
-# set in the environment
-# Also any assignments in arch/$(ARCH)/Makefile take precedence over
-# this default value
-export KBUILD_IMAGE ?= vmlinux
-
-#
-# INSTALL_PATH specifies where to place the updated kernel and system map
-# images. Default is /boot, but you can set it to other values
-export	INSTALL_PATH ?= /boot
-
-# Select initial ramdisk compression format, default is gzip(1).
-# This shall be used by the dracut(8) tool while creating an initramfs image.
-#
-INITRD_COMPRESS-y                  := gzip
-INITRD_COMPRESS-$(CONFIG_RD_BZIP2) := bzip2
-INITRD_COMPRESS-$(CONFIG_RD_LZMA)  := lzma
-INITRD_COMPRESS-$(CONFIG_RD_XZ)    := xz
-INITRD_COMPRESS-$(CONFIG_RD_LZO)   := lzo
-INITRD_COMPRESS-$(CONFIG_RD_LZ4)   := lz4
-# do not export INITRD_COMPRESS, since we didn't actually
-# choose a sane default compression above.
-# export INITRD_COMPRESS := $(INITRD_COMPRESS-y)
-
-core-y		+= kernel/ certs/ mm/ fs/ ipc/ security/ crypto/ block/
-
-vmlinux-dirs	:= $(patsubst %/,%,$(filter %/, $(init-y) $(init-m) \
-		     $(core-y) $(core-m) $(drivers-y) $(drivers-m) \
-		     $(net-y) $(net-m) $(libs-y) $(libs-m) $(virt-y)))
-
-vmlinux-alldirs	:= $(sort $(vmlinux-dirs) $(patsubst %/,%,$(filter %/, \
-		     $(init-) $(core-) $(drivers-) $(net-) $(libs-) $(virt-))))
-
-init-y		:= $(patsubst %/, %/built-in.a, $(init-y))
-core-y		:= $(patsubst %/, %/built-in.a, $(core-y))
-drivers-y	:= $(patsubst %/, %/built-in.a, $(drivers-y))
-net-y		:= $(patsubst %/, %/built-in.a, $(net-y))
-libs-y1		:= $(patsubst %/, %/lib.a, $(libs-y))
-libs-y2		:= $(patsubst %/, %/built-in.a, $(filter-out %.a, $(libs-y)))
-virt-y		:= $(patsubst %/, %/built-in.a, $(virt-y))
-
-# Externally visible symbols (used by link-vmlinux.sh)
-export KBUILD_VMLINUX_INIT := $(head-y) $(init-y)
-export KBUILD_VMLINUX_MAIN := $(core-y) $(libs-y2) $(drivers-y) $(net-y) $(virt-y)
-export KBUILD_VMLINUX_LIBS := $(libs-y1)
-export KBUILD_LDS          := arch/$(SRCARCH)/kernel/vmlinux.lds
-export LDFLAGS_vmlinux
-# used by scripts/package/Makefile
-export KBUILD_ALLDIRS := $(sort $(filter-out arch/%,$(vmlinux-alldirs)) arch Documentation include samples scripts tools)
-
-vmlinux-deps := $(KBUILD_LDS) $(KBUILD_VMLINUX_INIT) $(KBUILD_VMLINUX_MAIN) $(KBUILD_VMLINUX_LIBS)
-
-ARCH_POSTLINK := $(wildcard $(srctree)/arch/$(SRCARCH)/Makefile.postlink)
-
-# Final link of vmlinux with optional arch pass after final link
-cmd_link-vmlinux =                                                 \
-	$(CONFIG_SHELL) $< $(LD) $(KBUILD_LDFLAGS) $(LDFLAGS_vmlinux) ;    \
-	$(if $(ARCH_POSTLINK), $(MAKE) -f $(ARCH_POSTLINK) $@, true)
-
-vmlinux: scripts/link-vmlinux.sh $(vmlinux-deps) FORCE
-ifdef CONFIG_HEADERS_CHECK
-	$(Q)$(MAKE) -f $(srctree)/Makefile headers_check
-endif
-ifdef CONFIG_GDB_SCRIPTS
-	$(Q)ln -fsn $(abspath $(srctree)/scripts/gdb/vmlinux-gdb.py)
-endif
-	+$(call if_changed,link-vmlinux)
-
-# The actual objects are generated when descending,
-# make sure no implicit rule kicks in
-$(sort $(vmlinux-deps)): $(vmlinux-dirs) ;
-
-# Handle descending into subdirectories listed in $(vmlinux-dirs)
-# Preset locale variables to speed up the build process. Limit locale
-# tweaks to this spot to avoid wrong language settings when running
-# make menuconfig etc.
-# Error messages still appears in the original language
-
-PHONY += $(vmlinux-dirs)
-$(vmlinux-dirs): prepare scripts
-	$(Q)$(MAKE) $(build)=$@ need-builtin=1
-
 # Additional helpers built in scripts/
 # Carefully list dependencies so we do not try to build scripts twice
 # in parallel
@@ -644,7 +552,7 @@ endif
 # that need to depend on updated CONFIG_* values can be checked here.
 prepare2: prepare3 outputmakefile
 
-prepare1: prepare2 $(version_h) include/generated/utsrelease.h
+prepare1: prepare2 $(version_h)
 	$(cmd_crmodverdir)
 
 prepare0: prepare1 scripts_basic
@@ -696,7 +604,7 @@ MRPROPER_FILES += .config .config.old .version \
 #
 clean: rm-dirs  := $(CLEAN_DIRS)
 clean: rm-files := $(CLEAN_FILES)
-clean-dirs      := $(addprefix _clean_, . $(vmlinux-alldirs))
+clean-dirs      := $(addprefix _clean_, . )
 
 PHONY += $(clean-dirs) clean
 $(clean-dirs):
