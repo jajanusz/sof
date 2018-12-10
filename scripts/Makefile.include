@@ -1,9 +1,10 @@
 # SPDX-License-Identifier: GPL-2.0
-VERSION = 4
-PATCHLEVEL = 19
-SUBLEVEL = 0
-EXTRAVERSION =
-NAME = "People's Front"
+
+# Including file should have follwing arguments:
+# VERSION, PATCHLEVEL, SUBLEVEL - Kernel-like versioning variables
+# NAME - long name of the project
+# PROJECT_SHORT_NAME - used in generated symbols
+# PROJECT_BINARY_NAME - used as rules and binaries component
 
 # *DOCUMENTATION*
 # To see a list of typical targets execute "make help"
@@ -212,7 +213,7 @@ clean-targets := %clean mrproper cleandocs
 no-dot-config-targets := $(clean-targets) \
 			 cscope gtags TAGS tags help% %docs check% coccicheck \
 			 $(version_h) headers_% archheaders archscripts \
-			 kernelversion %src-pkg
+			 %src-pkg
 no-sync-config-targets := $(no-dot-config-targets) install %install \
 			   kernelrelease
 
@@ -269,8 +270,8 @@ else
 scripts/Kbuild.include: ;
 include scripts/Kbuild.include
 
-KERNELVERSION = $(VERSION)$(if $(PATCHLEVEL),.$(PATCHLEVEL)$(if $(SUBLEVEL),.$(SUBLEVEL)))$(EXTRAVERSION)
-export VERSION PATCHLEVEL SUBLEVEL KERNELVERSION
+PROJECTVERSION = $(VERSION)$(if $(PATCHLEVEL),.$(PATCHLEVEL)$(if $(SUBLEVEL),.$(SUBLEVEL)))$(EXTRAVERSION)
+export VERSION PATCHLEVEL SUBLEVEL PROJECTVERSION
 
 # Cross compiling and selecting different set of gcc/bin-utils
 # ---------------------------------------------------------------------------
@@ -458,7 +459,7 @@ endif
 # command line.
 # This allow a user to issue only 'make' to build a kernel
 # Defaults to main binary, but the arch makefile usually adds further targets
-all: # TODO
+all: $(PROJECT_BINARY_NAME)
 
 # The arch Makefile can set ARCH_{CPP,A,C}FLAGS to override the default
 # values of the respective KBUILD_* variables
@@ -505,6 +506,9 @@ endif # $(dot-config)
 KBUILD_CPPFLAGS += $(ARCH_CPPFLAGS) $(KCPPFLAGS)
 KBUILD_AFLAGS   += $(ARCH_AFLAGS)   $(KAFLAGS)
 KBUILD_CFLAGS   += $(ARCH_CFLAGS)   $(KCFLAGS)
+
+# Dependency that should be used on top-level rules
+buildsystem-prepare: prepare scripts ;
 
 # Additional helpers built in scripts/
 # Carefully list dependencies so we do not try to build scripts twice
@@ -553,13 +557,12 @@ prepare-objtool: $(objtool_target)
 # Generate some files
 # ---------------------------------------------------------------------------
 
-# KERNELRELEASE can change from a few different places, meaning version.h
-# needs to be updated, so this check is forced on all builds
+# version.h check is forced on all builds
 
 define filechk_version.h
-	(echo \#define LINUX_VERSION_CODE $(shell                         \
+	(echo \#define $(PROJECT_SHORT_NAME)_VERSION_CODE $(shell \
 	expr $(VERSION) \* 65536 + 0$(PATCHLEVEL) \* 256 + 0$(SUBLEVEL)); \
-	echo '#define KERNEL_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + (c))';)
+	echo '#define $(PROJECT_SHORT_NAME)_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + (c))';)
 endef
 
 $(version_h): FORCE
