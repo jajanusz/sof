@@ -1,0 +1,9 @@
+obj-y += audio/
+obj-y += drivers/
+obj-y += gdb/
+obj-y += init/
+obj-y += ipc/
+obj-y += lib/
+obj-y += math/
+obj-y += platform/
+obj-y += tasks/

@@ -1,0 +1,57 @@
+menu "Platform"
+
+choice
+	prompt "Platform"
+	default APOLLOLAKE
+
+config BAYTRAIL
+	bool "Build for Baytrail"
+	help
+	  Select if your target platform is Baytrail-compatible
+
+config CHERRYTRAIL
+	bool "Build for Cherrytrail"
+	help
+	  Select if your target platform is Cherrytrail-compatible
+
+config HASWELL
+	bool "Build for Haswell"
+	help
+	  Select if your target platform is Haswell-compatible
+
+config BROADWELL
+	bool "Build for Broadwell"
+	help
+	  Select if your target platform is Broadwell-compatible
+
+config APOLLOLAKE
+	bool "Build for Apollolake"
+	select CAVS
+	help
+	  Select if your target platform is Apollolake-compatible
+
+config CANNONLAKE
+	bool "Build for Cannonlake"
+	select CAVS
+	help
+	  Select if your target platform is Cannonlake-compatible
+
+config SUECREEK
+	bool "Build for Suecreek"
+	select CAVS
+	help
+	  Select if your target platform is Suecreek-compatible
+
+config ICELAKE
+	bool "Build for Icelake"
+	select CAVS
+	help
+	  Select if your target platform is Icelake-compatible
+
+endchoice
+
+config CAVS
+	bool
+	default n
+
+endmenu

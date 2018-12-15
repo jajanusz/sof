@@ -33,7 +33,8 @@
 *.xslt
 *.mbox
 
-Makefile
+# Kbuild needs Makefiles
+# Makefile
 Makefile.in
 configure
 depcomp

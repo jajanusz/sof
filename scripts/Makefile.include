@@ -361,14 +361,12 @@ LINUXINCLUDE    := \
 		-I$(objtree)/arch/$(SRCARCH)/include/generated \
 		$(if $(KBUILD_SRC), -I$(srctree)/include) \
 		-I$(objtree)/include \
-		$(USERINCLUDE)
+		$(USERINCLUDE) \
+		-I$(srctree)/src/include \
+		-I$(ROOT_DIR)/include
 
-KBUILD_AFLAGS   := -D__ASSEMBLY__
-KBUILD_CFLAGS   := -Wall -Wundef -Wstrict-prototypes -Wno-trigraphs \
-		   -fno-strict-aliasing -fno-common -fshort-wchar \
-		   -Werror-implicit-function-declaration \
-		   -Wno-format-security \
-		   -std=gnu89
+KBUILD_AFLAGS   := -DASSEMBLY
+KBUILD_CFLAGS   :=
 KBUILD_CPPFLAGS :=
 KBUILD_LDFLAGS :=
 GCC_PLUGINS_CFLAGS :=
@@ -428,7 +426,7 @@ ifeq ($(config-targets),1)
 # Read arch specific Makefile to set KBUILD_DEFCONFIG as needed.
 # KBUILD_DEFCONFIG may point out an alternative default configuration
 # used for 'make defconfig'
--include arch/$(SRCARCH)/Makefile
+-include src/arch/$(SRCARCH)/Makefile
 export KBUILD_DEFCONFIG KBUILD_KCONFIG CC_VERSION_TEXT
 
 config: scripts_basic outputmakefile FORCE
@@ -466,7 +464,8 @@ all: $(PROJECT_BINARY_NAME)
 ARCH_CPPFLAGS :=
 ARCH_AFLAGS :=
 ARCH_CFLAGS :=
--include arch/$(SRCARCH)/Makefile
+ARCH_LDFLAGS :=
+-include src/arch/$(SRCARCH)/Makefile
 
 ifeq ($(dot-config),1)
 ifeq ($(may-sync-config),1)
@@ -507,8 +506,10 @@ KBUILD_CPPFLAGS += $(ARCH_CPPFLAGS) $(KCPPFLAGS)
 KBUILD_AFLAGS   += $(ARCH_AFLAGS)   $(KAFLAGS)
 KBUILD_CFLAGS   += $(ARCH_CFLAGS)   $(KCFLAGS)
 
+KBUILD_LDFLAGS	+= $(ARCH_LDFLAGS)
+
 # Dependency that should be used on top-level rules
-buildsystem-prepare: prepare scripts ;
+buildsystem-prepare: prepare scripts FORCE;
 
 # Additional helpers built in scripts/
 # Carefully list dependencies so we do not try to build scripts twice
@@ -545,7 +546,7 @@ prepare2: prepare3 outputmakefile
 prepare1: prepare2 $(version_h)
 	$(cmd_crmodverdir)
 
-prepare0: prepare1 scripts_basic
+prepare0: archprepare prepare1 scripts_basic
 	$(Q)$(MAKE) $(build)=.
 
 # All the preparing..
@@ -599,7 +600,7 @@ PHONY += $(clean-dirs) clean
 $(clean-dirs):
 	$(Q)$(MAKE) $(clean)=$(patsubst _clean_%,%,$@)
 
-clean: $(clean-dirs)
+clean: archclean $(clean-dirs)
 	$(call cmd,rmdirs)
 	$(call cmd,rmfiles)
 	@find . $(RCS_FIND_IGNORE) \

@@ -1,0 +1,53 @@
+ifeq ($(CONFIG_SMP),y)
+# TODO it should be handled in subdir
+libreset-objs = \
+	smp/xtos/memctl_default.o \
+	smp/xtos/reset-vector.o
+else
+libreset-objs = \
+	up/xtos/reset-vector.o
+endif
+
+AFLAGS_memctl_default.o = -mtext-section-literals
+AFLAGS_reset-vector.o = -mtext-section-literals
+
+ifeq ($(BUILD_BOOTLOADER),y)
+#
+endif
+
+ifeq ($(BUILD_MODULE),y)
+#
+endif
+
+obj-y += timer.o
+
+ifeq ($(CONFIG_SMP),y)
+# TODO it should be handled in subdir
+obj-y += smp/
+obj-y += \
+	smp/xtos/crt1-boards.o \
+	smp/xtos/_vectors.o \
+	smp/cpu.o \
+	smp/init.o \
+	smp/notifier.o \
+	smp/schedule.o \
+	smp/task.o \
+	smp/work.o
+else
+obj-y += up/
+obj-y += \
+	up/xtos/crt1-boards.o \
+	up/xtos/_vectors.o \
+	up/cpu.o \
+	up/init.o \
+	up/notifier.o \
+	up/schedule.o \
+	up/task.o \
+	up/work.o
+endif
+
+ifeq ($(BUILD_BOOTLOADER),y)
+obj-y += main-entry.o
+else
+obj-y += libreset.o
+endif

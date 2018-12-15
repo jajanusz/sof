@@ -1,0 +1,55 @@
+mainmenu "SOF $(PROJECTVERSION) Configuration"
+
+comment "Compiler: $(CC_VERSION_TEXT)"
+
+source "scripts/Kconfig.include"
+
+source "src/Kconfig"
+
+config HOST_PTABLE
+	bool "Handling host page table"
+	default n
+	help
+	  Select for host page table
+
+config TASK_HAVE_PRIORITY_MEDIUM
+	bool "Handling medium priority task"
+	default n
+	help
+	  Select for medium priority task
+
+config BOOT_LOADER
+	bool "Boot Loader"
+	default n
+	help
+	  Select for boot loader
+
+config IRQ_MAP
+	bool "IRQ maps"
+	default n
+	help
+	  Select for IRQ maps
+
+config DMA_GW
+	bool "DMA Gateway"
+	default n
+	help
+	  Select for dma gateway
+
+config MEM_WND
+	bool "Memory Windows"
+	default n
+	help
+	  Select for memory windows
+
+config DMIC
+	bool "DMIC driver"
+	default n
+	help
+	  Select for DMIC driver
+
+config SMP
+	bool "SMP build"
+	default n
+	help
+	  Build SMP instead of UP

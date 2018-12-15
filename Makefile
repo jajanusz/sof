@@ -10,21 +10,28 @@ MAKEFLAGS += --no-builtin-rules --no-builtin-variables --include-dir=$(CURDIR)
 
 include scripts/Makefile.include
 
+ifeq ($(skip-makefile),)
+ifneq ($(mixed-targets),1)
+
 PROJECT_PHONY =
 
-objs-y		:= src/
+objs-y		:= src/ $(core-y)
 
 sof-dirs	:= $(patsubst %/,%,$(filter %/, $(objs-y)))
 sof-deps	:= $(patsubst %/, %/built-in.a, $(objs-y))
 
 # Link final binary
-sof-link: $(sof-deps) FORCE
-	${AR} rcsTP${KBUILD_ARFLAGS} built-in.a	$(sof-deps)
+quiet_cmd_linksof_objects = AR      $@
+      cmd_linksof_objects = rm -rf built-in.a; ${AR} rcsTP${KBUILD_ARFLAGS} built-in.a $(sof-deps)
 
-quiet_cmd_linksof = LD $@
-      cmd_linksof = $(CC) $(LDFLAGS) -o $@ built-in.a
+$(objtree)/built-in.a: $(sof-deps) FORCE
+	$(call if_changed,linksof_objects)
 
-sof: sof-link FORCE
+quiet_cmd_linksof = LD      $@
+      cmd_linksof = $(CC) $(KBUILD_LDFLAGS) $(KBUILD_CPPFLAGS) $(LINUXINCLUDE) $(KBUILD_AFLAGS) -Wl,-Map=sof.map \
+	-T $(main-lds-out) -o $@ built-in.a -lgcc
+
+sof: $(objtree)/built-in.a FORCE
 	$(call if_changed,linksof)
 
 # Prevent implicit rules for our dirs
@@ -53,3 +60,6 @@ clean: project-clean
 # Kbuild needs .PHONY targets in PHONY variable
 PHONY += $(PROJECT_PHONY)
 .PHONY: $(PROJECT_PHONY)
+
+endif # mixed-targets
+endif # skip-makefile
