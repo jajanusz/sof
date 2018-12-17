@@ -104,3 +104,10 @@ archclean:
 	$(Q)rm -f $(lds-scripts)
 
 core-y += src/arch/xtensa/
+
+# rimage
+
+build-rimage: FORCE
+	$(Q)$(MAKE) $(build)=rimage $@
+
+rimage: build-rimage ;

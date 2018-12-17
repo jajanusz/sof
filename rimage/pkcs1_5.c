@@ -31,6 +31,9 @@
 #include "css.h"
 #include "manifest.h"
 
+/* TODO: remove it, should be always passed by arg */
+#define DEFAULT_PEM_KEY_PREFIX "/usr/local/share/rimage"
+
 #if OPENSSL_VERSION_NUMBER < 0x10100000L
 void RSA_get0_key(const RSA *r,
 		  const BIGNUM **n, const BIGNUM **e, const BIGNUM **d);
@@ -95,7 +98,7 @@ int pkcs_v1_5_sign_man_v1_5(struct image *image,
 
 	/* load in RSA private key from PEM file */
 	if (!image->key_name)
-		sprintf(path, "%s/otc_private_key.pem", PEM_KEY_PREFIX);
+		sprintf(path, "%s/otc_private_key.pem", DEFAULT_PEM_KEY_PREFIX);
 	else
 		strncpy(path, image->key_name, 256);
 
@@ -186,7 +189,7 @@ int pkcs_v1_5_sign_man_v1_8(struct image *image,
 
 	/* load in RSA private key from PEM file */
 	if (!image->key_name)
-		sprintf(path, "%s/otc_private_key.pem", PEM_KEY_PREFIX);
+		sprintf(path, "%s/otc_private_key.pem", DEFAULT_PEM_KEY_PREFIX);
 	else
 		strcpy(path, image->key_name);
 
