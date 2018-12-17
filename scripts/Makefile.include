@@ -207,7 +207,7 @@ export srctree objtree VPATH
 # Detect when mixed targets is specified, and make a second invocation
 # of make so .config is not included in this case either (for *config).
 
-version_h := include/generated/uapi/linux/version.h
+version_h := include/version.h
 
 clean-targets := %clean mrproper cleandocs
 no-dot-config-targets := $(clean-targets) \
@@ -560,14 +560,27 @@ prepare-objtool: $(objtool_target)
 
 # version.h check is forced on all builds
 
+GIT_TAG = 00000
+ifneq ($(wildcard .git),)
+        GIT_TAG = $(shell git log --pretty=format:"%h" -1 | cut -c1-5)
+endif
+
 define filechk_version.h
-	(echo \#define $(PROJECT_SHORT_NAME)_VERSION_CODE $(shell \
-	expr $(VERSION) \* 65536 + 0$(PATCHLEVEL) \* 256 + 0$(SUBLEVEL)); \
-	echo '#define $(PROJECT_SHORT_NAME)_VERSION(a,b,c) (((a) << 16) + ((b) << 8) + (c))';)
+	(echo '#define SOF_MAJOR $(VERSION)'; \
+	echo '#define SOF_MINOR $(PATCHLEVEL)'; \
+	echo '#define SOF_MICRO $(SUBLEVEL)'; \
+	echo '#define SOF_TAG "$(GIT_TAG)"'; \
+	echo '#define SOF_BUILD $(shell cat "$(objtree)/.build")';)
 endef
 
-$(version_h): FORCE
+$(version_h): $(objtree)/.build FORCE
 	$(call filechk,version.h)
+
+$(objtree)/.build:
+	$(Q)echo 0 > $@
+
+increment-build: $(objtree)/.build
+	$(Q)echo $$(( (`cat "$(objtree)/.build"` + 1) % 0xFFFF )) > "$(objtree)/.build"
 
 PHONY += headerdep
 headerdep:
@@ -588,7 +601,8 @@ CLEAN_DIRS  +=
 MRPROPER_DIRS  += include/config usr/include include/generated          \
 		  arch/*/include/generated .tmp_objdiff
 MRPROPER_FILES += .config .config.old .version \
-		  tags TAGS cscope* GPATH GTAGS GRTAGS GSYMS
+		  tags TAGS cscope* GPATH GTAGS GRTAGS GSYMS \
+		  $(objtree)/.build
 
 # clean - Delete most, but leave config
 #

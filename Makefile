@@ -31,7 +31,7 @@ quiet_cmd_linksof = LD      $@
       cmd_linksof = $(CC) $(KBUILD_LDFLAGS) $(KBUILD_CPPFLAGS) $(LINUXINCLUDE) $(KBUILD_AFLAGS) -Wl,-Map=sof.map \
 	-T $(main-lds-out) -o $@ built-in.a -lgcc
 
-sof: $(objtree)/built-in.a FORCE
+sof: $(objtree)/built-in.a increment-build FORCE
 	$(call if_changed,linksof)
 
 # Prevent implicit rules for our dirs
