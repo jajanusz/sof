@@ -42,14 +42,14 @@ config MEM_WND
 	help
 	  Select for memory windows
 
-config DMIC
-	bool "DMIC driver"
+config GDB_DEBUG
+	bool "GDB Stub"
 	default n
 	help
-	  Select for DMIC driver
+	  Select for GDB debugging
 
-config SMP
-	bool "SMP build"
+config DEBUG_HEAP
+	bool "Heap debug"
 	default n
 	help
-	  Build SMP instead of UP
+	  Select for enable heap alloc debugging

@@ -1,0 +1,9 @@
+menu "Drivers"
+
+config DMIC
+	bool "DMIC driver"
+	default n
+	help
+	  Select for DMIC driver
+
+endmenu
