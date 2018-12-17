@@ -28,8 +28,11 @@ $(objtree)/built-in.a: $(sof-deps) FORCE
 	$(call if_changed,linksof_objects)
 
 quiet_cmd_linksof = LD      $@
-      cmd_linksof = $(CC) $(KBUILD_LDFLAGS) $(KBUILD_CPPFLAGS) $(LINUXINCLUDE) $(KBUILD_AFLAGS) -Wl,-Map=sof.map \
+      cmd_linksof = $(CC) $(KBUILD_LDFLAGS) $(KBUILD_CPPFLAGS) $(LINUXINCLUDE) -Wl,-Map=sof.map \
 	-T $(main-lds-out) -o $@ built-in.a -lgcc
+
+# In case of parallel execution build first
+increment-build: $(objtree)/built-in.a
 
 sof: $(objtree)/built-in.a increment-build FORCE
 	$(call if_changed,linksof)

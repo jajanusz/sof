@@ -11,14 +11,6 @@ endif
 AFLAGS_memctl_default.o = -mtext-section-literals
 AFLAGS_reset-vector.o = -mtext-section-literals
 
-ifeq ($(BUILD_BOOTLOADER),y)
-#
-endif
-
-ifeq ($(BUILD_MODULE),y)
-#
-endif
-
 obj-y += timer.o
 
 ifeq ($(CONFIG_SMP),y)
@@ -48,6 +40,11 @@ endif
 
 ifeq ($(BUILD_BOOTLOADER),y)
 obj-y += main-entry.o
+extra-y += $(libreset-objs)
 else
 obj-y += libreset.o
+endif
+
+ifeq ($(BUILD_BOOTLOADER),y)
+extra-y += boot_entry.o boot_loader.o
 endif
