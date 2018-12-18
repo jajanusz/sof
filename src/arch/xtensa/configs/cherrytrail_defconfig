@@ -1,0 +1,18 @@
+# CONFIG_SMP is not set
+# CONFIG_BAYTRAIL is not set
+CONFIG_CHERRYTRAIL=y
+# CONFIG_HASWELL is not set
+# CONFIG_BROADWELL is not set
+# CONFIG_APOLLOLAKE=y is not set
+# CONFIG_CANNONLAKE is not set
+# CONFIG_SUECREEK is not set
+# CONFIG_ICELAKE is not set
+# CONFIG_DMIC is not set
+CONFIG_HOST_PTABLE=y
+CONFIG_TASK_HAVE_PRIORITY_MEDIUM=y
+# CONFIG_BOOT_LOADER is not set
+# CONFIG_IRQ_MAP is not set
+# CONFIG_DMA_GW is not set
+# CONFIG_MEM_WND is not set
+# CONFIG_GDB_DEBUG is not set
+# CONFIG_DEBUG_HEAP is not set
