@@ -233,3 +233,8 @@ bin-clean:
 	$(Q)$(MAKE) $(clean)=rimage
 	$(Q)rm -fr mod-* sof-* boot_ldr boot_ldr-*
 	$(Q)rm -fr *.a *.map *.dis *.lst *.bin
+
+define archhelp
+  echo  '* sof		  - Build the bare kernel'
+  echo  '  bin		  - Build loadable signed kernel'
+endef
