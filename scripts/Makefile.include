@@ -363,8 +363,7 @@ LINUXINCLUDE    := \
 		$(if $(KBUILD_SRC), -I$(srctree)/include) \
 		-I$(objtree)/include \
 		$(USERINCLUDE) \
-		-I$(srctree)/src/include \
-		-I$(ROOT_DIR)/include
+		-I$(srctree)/src/include
 
 KBUILD_AFLAGS   := -DASSEMBLY
 KBUILD_CFLAGS   :=

@@ -39,6 +39,11 @@ endif
 platform-rom-ld-script = rom.x
 platform-bootldr-ld-script = boot_ldr.x
 
+# xt- toolchain, doesn't follow gcc prefix convention
+ifeq ($(CROSS_COMPILE),xt-)
+CC = xt-xcc
+endif
+
 ifeq ($(CC),xt-xcc)
 XCC := y
 endif
@@ -63,6 +68,7 @@ else
 arch-include += -I$(srctree)/src/platform/$(platform-folder)/include/arch
 endif
 
+arch-include += -I$(ROOT_DIR)/include
 ARCH_CPPFLAGS += $(arch-include)
 
 ARCH_CFLAGS += -fno-inline-functions -nostdlib -mlongcalls -mtext-section-literals \
