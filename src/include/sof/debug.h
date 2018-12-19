@@ -48,7 +48,7 @@
 #define DEBUG_GDB	0
 #endif
 
-#ifdef DEBUG_BUILD
+#ifdef CONFIG_DEBUG_BUILD
 
 #define DEBUG_SET_FW_READY_FLAGS	\
 {					\

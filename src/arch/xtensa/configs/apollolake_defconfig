@@ -17,3 +17,4 @@ CONFIG_DMA_GW=y
 CONFIG_MEM_WND=y
 # CONFIG_GDB_DEBUG is not set
 # CONFIG_DEBUG_HEAP is not set
+# CONFIG_DEBUG_BUILD is not set

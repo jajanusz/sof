@@ -16,3 +16,4 @@ CONFIG_HOST_PTABLE=y
 # CONFIG_MEM_WND is not set
 # CONFIG_GDB_DEBUG is not set
 # CONFIG_DEBUG_HEAP is not set
+# CONFIG_DEBUG_BUILD is not set
