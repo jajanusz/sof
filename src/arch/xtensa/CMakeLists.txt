@@ -316,12 +316,17 @@ if(MEU_PATH)
 		set(MEU_OPENSSL "/usr/bin/openssl")
 	endif()
 
+	file(READ "${MEU_PATH}/generic_meu_conf.xml" xml_content)
+	string(REGEX REPLACE "ge0([^, ]+\")" "ge1\\1" xml_content "${xml_content}")
+	set(meu_xml ${PROJECT_BINARY_DIR}/generic_meu_conf.xml)
+	file(WRITE "${meu_xml}" "${xml_content}")
+
 	add_custom_target(
 		run_meu
 		COMMAND ${MEU_PATH}/meu -w ./ -s sof-${fw_name}
 			-key ${MEU_PRIVATE_KEY}
 			-stp ${MEU_OPENSSL}
-			-f ${MEU_PATH}/generic_meu_conf.xml
+			-f ${meu_xml}
 			-mnver 0.0.0.0 -o sof-${fw_name}.ri
 		DEPENDS run_rimage
 		VERBATIM
