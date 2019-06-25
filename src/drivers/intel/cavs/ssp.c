@@ -151,6 +151,7 @@ static inline int ssp_set_config(struct dai *dai,
 	uint32_t mdivr_val;
 	uint32_t i2s_m;
 	uint32_t i2s_n;
+	uint32_t mn_freq;
 	uint32_t data_size;
 	uint32_t frame_end_padding;
 	uint32_t slot_end_padding;
@@ -368,20 +369,51 @@ static inline int ssp_set_config(struct dai *dai,
 		goto out;
 	}
 
+	/* M/N */
+	if (config->ssp.divider_m || config->ssp.divider_n) {
+		i2s_m = config->ssp.divider_m;
+		i2s_n = config->ssp.divider_n;
+
+		if (i2s_n == 0) {
+			trace_ssp_error("ssp_set_config() error: N = 0");
+			ret = -EINVAL;
+			goto out;
+		}
+
+		if (i2s_m > i2s_n) {
+			trace_ssp_error("ssp_set_config() error: M %d > N %d",
+					i2s_m, i2s_n);
+			ret = -EINVAL;
+			goto out;
+		}
+	}
+
+	/* M/N requires External Clock to be selected */
+	if (i2s_m != 1 || i2s_n != 1)
+		sscr0 |= SSCR0_ECS;
+
 	/* BCLK config */
 	/* searching the smallest possible bclk source */
 	clk_index = -1;
 	for (i = MAX_SSP_FREQ_INDEX; i >= 0; i--) {
-		if (config->ssp.bclk_rate > ssp_freq[i].freq)
+		/* effective value after applying M/N */
+		mn_freq = (uint32_t)((ssp_freq[i].freq * (uint64_t)i2s_m)
+				     / i2s_n);
+
+		if (config->ssp.bclk_rate > mn_freq)
 			break;
 
-		if (ssp_freq[i].freq % config->ssp.bclk_rate == 0)
+		if (mn_freq % config->ssp.bclk_rate == 0)
 			clk_index = i;
 	}
 
 	if (clk_index >= 0) {
 		mdivc |= MNDSS(ssp_freq[clk_index].enc);
-		mdiv = ssp_freq[clk_index].freq / config->ssp.bclk_rate;
+
+		mn_freq = (uint32_t)((ssp_freq[clk_index].freq
+				      * (uint64_t)i2s_m) / i2s_n);
+
+		mdiv = mn_freq / config->ssp.bclk_rate;
 
 		/* select M/N output for bclk in case of Audio Cardinal
 		 * or PLL Fixed clock.
