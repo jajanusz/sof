@@ -369,6 +369,12 @@ static inline int ssp_set_config(struct dai *dai,
 		goto out;
 	}
 
+	/* FIXME: hardcoded for testing rt1011
+	 * With M/N set to 64/125, just need to set BCLK to f.e. 3.072 or 6.144.
+	 */
+	config->ssp.divider_m = 64;
+	config->ssp.divider_n = 125;
+
 	/* M/N */
 	if (config->ssp.divider_m || config->ssp.divider_n) {
 		i2s_m = config->ssp.divider_m;
