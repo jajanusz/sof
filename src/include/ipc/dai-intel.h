@@ -83,6 +83,10 @@ struct sof_ipc_dai_ssp_params {
 	uint16_t tdm_per_slot_padding_flag;
 	uint32_t clks_control;
 	uint32_t quirks;
+
+	/* M/N */
+	uint32_t divider_m;
+	uint32_t divider_n;
 } __attribute__((packed));
 
 /* HDA Configuration Request - SOF_IPC_DAI_HDA_CONFIG */
