@@ -21,8 +21,8 @@ struct freq_table *cpu_freq = platform_cpu_freq;
  * (regarding to .freq field)
  */
 static struct freq_table platform_ssp_freq[] = {
+	{ 24000000, 24000, CLOCK_SSP_XTAL_OSCILLATOR }, /* default */
 	{ 24576000, 24576, CLOCK_SSP_AUDIO_CARDINAL },
-	{ 38400000, 38400, CLOCK_SSP_XTAL_OSCILLATOR }, /* default */
 	{ 96000000, 96000, CLOCK_SSP_PLL_FIXED },
 };
 
