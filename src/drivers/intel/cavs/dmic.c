@@ -1341,6 +1341,12 @@ static void dmic_stop(struct dai *dai)
 
 	trace_dmic("dmic_stop()");
 	spin_lock(&dai->lock);
+
+	if (dmic->state != COMP_STATE_ACTIVE) {
+		trace_dmic("dmic_stop(), already stopped");
+		goto out;
+	}
+
 	dmic->state = COMP_STATE_PREPARE;
 
 	/* Stop FIFO packers and set FIFO initialize bits */
@@ -1386,6 +1392,7 @@ static void dmic_stop(struct dai *dai)
 
 	dmic_active_fifos--;
 
+out:
 	spin_unlock(&dai->lock);
 }
 
