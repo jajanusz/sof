@@ -177,3 +177,15 @@ void clock_init(void)
 			ssp_freq[SSP_DEFAULT_IDX].ticks_per_msec;
 	spinlock_init(&clk_pdata->clk[CLK_SSP].lock);
 }
+
+void clock_set_high_freq(void)
+{
+	trace_clk("Entering HIGH clock");
+	clock_set_freq(CLK_CPU(cpu_get_id()), CLK_MAX_CPU_HZ);
+}
+
+void clock_set_low_freq(void)
+{
+	trace_clk("Entering LOW clock");
+	clock_set_freq(CLK_CPU(cpu_get_id()), 120000000);
+}

@@ -61,4 +61,8 @@ uint64_t clock_ms_to_ticks(int clock, uint64_t ms);
 
 void clock_init(void);
 
+void clock_set_high_freq(void);
+
+void clock_set_low_freq(void);
+
 #endif

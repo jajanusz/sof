@@ -350,6 +350,9 @@ NEEDSAR	rsr.sar	a12
 	s32i	a13, a1, UEXC_vpri		// save previous vpri
 
 	_beqz	a15, spurious_int		// no interrupt to handle (spurious interrupt)
+
+	call8 clock_set_high_freq
+
 NEEDSAR	s32i	a12, a1, UEXC_sar		// note: in XEA1, UEXC_sar must be set *after* beqz above
 
 IFFAIR	s32i	a2, a1, UEXC_exccause		// save a2 (interrupted code's a6)

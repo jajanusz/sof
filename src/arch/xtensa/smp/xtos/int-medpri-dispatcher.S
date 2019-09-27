@@ -183,6 +183,9 @@ LABEL(_Level,FromVector):
 	and	a15, a15, a13
 	rsr.sar	a14
 	_beqz	a15, LABEL(spurious,int)
+
+	call8 clock_set_high_freq
+
 	s32i	a14, a1, UEXC_sar
 	save_loops_mac16	a1, a13, a14
 
