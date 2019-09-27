@@ -37,6 +37,7 @@
 #include <sof/lock.h>
 #include <sof/notifier.h>
 #include <sof/cpu.h>
+#include <arch/wait.h>
 #include <platform/clk.h>
 #include <platform/clk-map.h>
 #include <platform/platform.h>
@@ -176,4 +177,38 @@ void clock_init(void)
 	clk_pdata->clk[CLK_SSP].ticks_per_msec =
 			ssp_freq[SSP_DEFAULT_IDX].ticks_per_msec;
 	spinlock_init(&clk_pdata->clk[CLK_SSP].lock);
+}
+
+ jjt jj_handlers[XCHAL_NUM_INTERRUPTS];
+void* jj_args[XCHAL_NUM_INTERRUPTS];
+
+void jj_handler(void *arg)
+{
+	clock_set_high_freq();
+
+	jjt f = jj_handlers[(uint32_t)arg];
+	if (f) {
+		f(jj_args[(uint32_t)arg]);
+	}
+	
+}
+
+void clock_set_high_freq(void)
+{
+	// trace_clk("clock_set_high_freq");
+	uint32_t reg = io_reg_read(SHIM_BASE + SHIM_CLKCTL);
+	reg = reg & ~(SHIM_CLKCTL_OCS_LP_RING);
+	reg = reg | SHIM_CLKCTL_OCS_HP_RING;
+
+	io_reg_write(SHIM_BASE + SHIM_CLKCTL, reg);
+}
+
+void clock_set_low_freq(void)
+{
+	// trace_clk("clock_set_low_freq");
+	uint32_t reg = io_reg_read(SHIM_BASE + SHIM_CLKCTL);
+	reg = reg & ~(SHIM_CLKCTL_OCS_HP_RING);
+	reg = reg | SHIM_CLKCTL_OCS_LP_RING;
+
+	io_reg_write(SHIM_BASE + SHIM_CLKCTL, reg);
 }

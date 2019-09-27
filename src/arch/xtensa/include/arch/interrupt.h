@@ -37,13 +37,22 @@
 #include <sof/interrupt-map.h>
 #include <stdint.h>
 #include <stdlib.h>
+#include <sof/clk.h>
+#include <sof/panic.h>
 
 static inline int arch_interrupt_register(int irq,
 	void (*handler)(void *arg), void *arg)
 {
 	irq = SOF_IRQ_NUMBER(irq);
+
+	if(irq >= XCHAL_NUM_INTERRUPTS || irq < 0) {
+		panic((SOF_IPC_PANIC_MAGIC | 0xc));
+	}
+
 	xthal_set_intclear(0x1 << irq);
-	_xtos_set_interrupt_handler_arg(irq, handler, arg);
+	jj_handlers[irq] = handler;
+	jj_args[irq] = arg;
+	_xtos_set_interrupt_handler_arg(irq, jj_handler, (void*)irq);
 	return 0;
 }
 

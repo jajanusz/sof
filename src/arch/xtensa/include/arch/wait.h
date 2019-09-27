@@ -33,6 +33,7 @@
 
 #include <xtensa/xtruntime.h>
 #include <arch/interrupt.h>
+#include <sof/clk.h>
 #include <sof/panic.h>
 
 #include <uapi/ipc/trace.h>
@@ -69,6 +70,8 @@ static inline void arch_wait_for_interrupt(int level)
 	/* can only enter WFI when at run level 0 i.e. not IRQ level */
 	if (arch_interrupt_get_level() > 0)
 		panic(SOF_IPC_PANIC_WFI);
+
+	clock_set_low_freq();
 
 	asm volatile("waiti 0");
 }
