@@ -133,8 +133,8 @@
 #define SHIM_CLKCTL_DMICFDCGB		BIT(30)
 
 /** \brief Oscillator Clock Select*/
-#define SHIM_CLKCTL_OCS_HP_RING		BIT(2)
-#define SHIM_CLKCTL_OCS_LP_RING		0
+#define SHIM_CLKCTL_OSC_HP_RING		BIT(2)
+#define SHIM_CLKCTL_OSC_LP_RING		0
 
 /** \brief LP Memory Clock Select */
 #define SHIM_CLKCTL_LMCS_DIV2	0
@@ -143,6 +143,18 @@
 /** \brief HP Memory Clock Select */
 #define SHIM_CLKCTL_HMCS_DIV2	0
 #define SHIM_CLKCTL_HMCS_DIV4	BIT(0)
+
+/** \brief Mask for requesting clock
+ */
+#define SHIM_CLKCTL_OSC_REQUEST_MASK \
+	(SHIM_CLKCTL_RHROSCC | SHIM_CLKCTL_RXOSCC | \
+	SHIM_CLKCTL_RLROSCC)
+
+/** \brief Mask for setting previously requested clock
+ */
+#define SHIM_CLKCTL_OSC_SOURCE_MASK \
+	(SHIM_CLKCTL_OSC_HP_RING | SHIM_CLKCTL_LMCS_DIV4 | \
+	SHIM_CLKCTL_HMCS_DIV4)
 
 /** \brief Clock status */
 #define SHIM_CLKSTS		0x7C
