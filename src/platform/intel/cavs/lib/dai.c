@@ -10,6 +10,7 @@
 #include <sof/common.h>
 #include <sof/drivers/hda.h>
 #include <sof/drivers/interrupt.h>
+#include <sof/drivers/mn.h>
 #include <sof/lib/dai.h>
 #include <sof/lib/dma.h>
 #include <sof/lib/memory.h>
@@ -138,6 +139,11 @@ int dai_init(void)
 		spinlock_init(&ssp[i].lock);
 	}
 #endif
+
+#if CONFIG_CAVS_MN
+	mn_init();
+#endif
+
 	/* init hd/a, note that size depends on the platform caps */
 	for (i = 0; i < ARRAY_SIZE(hda); i++) {
 		hda[i].index = i;
