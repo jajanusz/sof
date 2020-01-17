@@ -31,8 +31,9 @@ struct comp_dev *post_mixer_comp;
 struct comp_buffer *post_mixer_buf;
 
 /* Mocking comp_register here so we can register our components properly */
-int comp_register(struct comp_driver *drv)
+int comp_register(struct comp_driver_info *drvi)
 {
+	const struct comp_driver *drv = drvi->drv;
 	void *dst;
 	int err;
 	switch (drv->type) {

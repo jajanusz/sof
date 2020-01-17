@@ -183,8 +183,9 @@ static int buffering_test_teardown(void **state)
 }
 
 /* Mock comp_register here so we can register our components properly */
-int comp_register(struct comp_driver *drv)
+int comp_register(struct comp_driver_info *drvi)
 {
+	const struct comp_driver *drv = drvi->drv;
 	void *dst;
 
 	switch (drv->type) {

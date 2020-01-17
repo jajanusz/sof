@@ -63,7 +63,11 @@ struct comp_driver comp_mock = {
 	},
 };
 
+static struct comp_driver_info comp_mock_info = {
+	.drv = &comp_mock,
+};
+
 void sys_comp_mock_init(void)
 {
-	comp_register(&comp_mock);
+	comp_register(&comp_mock_info);
 }
