@@ -28,6 +28,8 @@ struct test_data {
 	struct comp_buffer *sink;
 };
 
+struct sof *sof_get(void);
+
 static int16_t input_16b[MUX_MAX_STREAMS][PLATFORM_MAX_CHANNELS] = {
 	{ 0x101, 0x102, 0x104, 0x108,
 	  0x111, 0x112, 0x114, 0x118, },
@@ -94,7 +96,7 @@ static uint8_t masks[][MUX_MAX_STREAMS][PLATFORM_MAX_CHANNELS] = {
 
 static int setup_group(void **state)
 {
-	sys_comp_init();
+	sys_comp_init(sof_get());
 	sys_comp_mux_init();
 
 	return 0;

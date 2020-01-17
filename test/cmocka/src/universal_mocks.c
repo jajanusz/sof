@@ -24,3 +24,10 @@ int memcpy_s(void *dest, size_t dest_size,
 
 	return 0;
 }
+
+static struct sof sof;
+
+struct sof *sof_get(void)
+{
+	return &sof;
+}

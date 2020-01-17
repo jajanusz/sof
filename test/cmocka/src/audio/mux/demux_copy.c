@@ -80,9 +80,11 @@ static uint8_t masks[][MUX_MAX_STREAMS][PLATFORM_MAX_CHANNELS] = {
 	  { 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, 0xff, }, },
 };
 
+struct sof *sof_get(void);
+
 static int setup_group(void **state)
 {
-	sys_comp_init();
+	sys_comp_init(sof_get());
 	sys_comp_mux_init();
 
 	return 0;

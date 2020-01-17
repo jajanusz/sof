@@ -15,6 +15,8 @@
 #include <stdlib.h>
 #include <cmocka.h>
 
+struct sof *sof_get(void);
+
 struct test_data {
 	struct comp_dev *dev;
 	struct comp_data *cd;
@@ -22,7 +24,7 @@ struct test_data {
 
 static int setup_group(void **state)
 {
-	sys_comp_init();
+	sys_comp_init(sof_get());
 	sys_comp_mux_init();
 
 	return 0;

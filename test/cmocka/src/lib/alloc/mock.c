@@ -19,7 +19,6 @@ TRACE_IMPL()
 struct dma_copy;
 struct dma_sg_config;
 
-static struct sof sof;
 
 void arch_dump_regs_a(void *dump_buf)
 {
@@ -42,7 +41,4 @@ volatile void *task_context_get(void)
 	return NULL;
 }
 
-struct sof *sof_get(void)
-{
-	return &sof;
-}
+

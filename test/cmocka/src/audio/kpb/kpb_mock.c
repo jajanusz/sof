@@ -24,7 +24,6 @@
 
 TRACE_IMPL()
 
-static struct sof sof;
 
 void *_balloc(uint32_t flags, uint32_t caps, size_t bytes,
 	      uint32_t alignment)
@@ -133,8 +132,5 @@ void pm_runtime_disable(enum pm_runtime_context context, uint32_t index)
 	(void)index;
 }
 
-struct sof *sof_get(void)
-{
-	return &sof;
-}
+
 
