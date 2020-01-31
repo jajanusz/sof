@@ -6,18 +6,9 @@ project(SOF_RIMAGE C)
 
 set(SOF_ROOT_SOURCE_DIRECTORY "${PROJECT_SOURCE_DIR}/..")
 
-if(NOT DEFINED VERSION_H_PATH)
-	message(FATAL_ERROR
-	" Please specify version.h path.\n" 
-	" Example: cmake -DVERSION_H_PATH=${VERSION_H_PATH} ...\n"
-)
-endif()
-
 if(NOT DEFINED PEM_KEY_PREFIX)
 	set(PEM_KEY_PREFIX "/usr/local/share/rimage")
 endif()
-
-get_filename_component(VERSION_H_DIRECTORY ${VERSION_H_PATH} DIRECTORY)
 
 add_executable(rimage
 	file_simple.c
@@ -48,5 +39,4 @@ target_link_libraries(rimage PRIVATE "-lcrypto")
 
 target_include_directories(rimage PRIVATE 
 	"${SOF_ROOT_SOURCE_DIRECTORY}/src/include"
-	"${VERSION_H_DIRECTORY}"
 )

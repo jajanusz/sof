@@ -31,6 +31,59 @@ static const struct adsp *machine[] = {
 	&machine_imx8m,
 };
 
+static struct fw_version parse_version(const char *ver_str)
+{
+	struct fw_version ver;
+	int comps[4] = { 0 };
+	int i = 0;
+	char *tmp = strtok(ver_str, ".");
+
+	while (i < 4 && tmp) {
+		comps[i] = atoi(tmp);
+		tmp = strtok(NULL, ".");
+		++i;
+	}
+
+	ver.major_version = comps[0];
+	ver.minor_version = comps[1];
+	ver.hotfix_version = comps[2];
+	ver.build_version = comps[3];
+
+	return ver;
+}
+
+static void set_fw_image_version(struct image *image, struct fw_version ver)
+{
+	struct sof_man_fw_desc *desc = NULL;
+	struct css_header_v1_8 *css = NULL;
+
+	if (image->adsp->man_v1_5)
+		desc = &image->adsp->man_v1_5->desc;
+
+	if (image->adsp->man_v1_5_sue)
+		desc = &image->adsp->man_v1_5_sue->desc;
+
+	if (image->adsp->man_v1_8) {
+		desc = &image->adsp->man_v1_8->desc;
+		css = &image->adsp->man_v1_8->css;
+	}
+
+	if (image->adsp->man_v2_5) {
+		desc = &image->adsp->man_v2_5->desc;
+		css = &image->adsp->man_v2_5->css;
+	}
+
+	if (desc) {
+		desc->header.major_version = ver.major_version;
+		desc->header.minor_version = ver.minor_version;
+		desc->header.hotfix_version = ver.hotfix_version;
+		desc->header.build_version = ver.build_version;
+	}
+
+	if (css)
+		css->version = ver;
+}
+
 static void usage(char *name)
 {
 	fprintf(stdout, "%s:\t -m machine -o outfile -k [key] ELF files\n",
@@ -41,6 +94,7 @@ static void usage(char *name)
 	fprintf(stdout, "\t -p log dictionary outfile\n");
 	fprintf(stdout, "\t -i set IMR type\n");
 	fprintf(stdout, "\t -x set xcc module offset\n");
+	fprintf(stdout, "\t -n fw version in format major.minor.micro.build\n");
 	exit(0);
 }
 
@@ -50,12 +104,13 @@ int main(int argc, char *argv[])
 	const char *mach = NULL;
 	int opt, ret, i, elf_argc = 0;
 	int imr_type = MAN_DEFAULT_IMR_TYPE;
+	struct fw_version fw_ver = { 0 }; // default version is 0.0.0.0
 
 	memset(&image, 0, sizeof(image));
 
 	image.xcc_mod_offset = DEFAULT_XCC_MOD_OFFSET;
 
-	while ((opt = getopt(argc, argv, "ho:p:m:vba:s:k:l:ri:x:")) != -1) {
+	while ((opt = getopt(argc, argv, "ho:p:m:vba:s:k:l:ri:x:n:")) != -1) {
 		switch (opt) {
 		case 'o':
 			image.out_file = optarg;
@@ -90,6 +145,9 @@ int main(int argc, char *argv[])
 		case 'h':
 			usage(argv[0]);
 			break;
+		case 'n':
+			fw_ver = parse_version(optarg);
+			break;
 		default:
 			break;
 		}
@@ -120,6 +178,8 @@ int main(int argc, char *argv[])
 	return -EINVAL;
 
 found:
+
+	set_fw_image_version(&image, fw_ver);
 
 	/* set IMR Type in found machine definition */
 	if (image.adsp->man_v1_8)

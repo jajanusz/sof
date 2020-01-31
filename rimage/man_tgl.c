@@ -6,7 +6,6 @@
 #include "cse.h"
 #include "plat_auth.h"
 #include "manifest.h"
-#include <version.h>
 
 /* manifest template */
 struct fw_image_manifest_v2_5 tgl_manifest = {
@@ -48,12 +47,6 @@ struct fw_image_manifest_v2_5 tgl_manifest = {
 		.size		= 222,
 		.header_id	= MAN_CSS_HDR_ID,
 		.padding	= 0,
-		.version = {
-			.major_version	= SOF_MAJOR,
-			.minor_version	= SOF_MINOR,
-			.hotfix_version = 0,
-			.build_version	= SOF_BUILD,
-		},
 		.modulus_size	= MAN_CSS_MOD_SIZE,
 		.exponent_size	= MAN_CSS_EXP_SIZE,
 	},
@@ -116,10 +109,6 @@ struct fw_image_manifest_v2_5 tgl_manifest = {
 			.preload_page_count	= 0,	/* size in pages from $CPD */
 			.fw_image_flags	= SOF_MAN_FW_HDR_FLAGS,
 			.feature_mask	= SOF_MAN_FW_HDR_FEATURES,
-			.major_version	= SOF_MAJOR,
-			.minor_version	= SOF_MINOR,
-			.hotfix_version	= 0,
-			.build_version	= SOF_BUILD,
 			.load_offset	= 0x30000,
 		},
 	},

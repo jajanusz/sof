@@ -204,8 +204,7 @@ ExternalProject_Add(rimage_ep
 	PREFIX "${PROJECT_BINARY_DIR}/rimage_ep"
 	BINARY_DIR "${PROJECT_BINARY_DIR}/rimage_ep/build"
 	BUILD_ALWAYS 1
-	CMAKE_ARGS -DVERSION_H_PATH=${VERSION_H_PATH}
-		-DPEM_KEY_PREFIX=${PROJECT_SOURCE_DIR}/rimage/keys
+	CMAKE_ARGS -DPEM_KEY_PREFIX=${PROJECT_SOURCE_DIR}/rimage/keys
 	INSTALL_COMMAND ""
 )
 
@@ -301,6 +300,7 @@ if(MEU_PATH)
 			-o sof-${fw_name}.ri
 			-p sof-${fw_name}.ldc
 			-m ${fw_name}
+			-n ${SOF_VERSION}
 			-s ${MEU_OFFSET}
 			-k ${RIMAGE_PRIVATE_KEY}
 			-i ${RIMAGE_IMR_TYPE}
@@ -342,6 +342,7 @@ else()
 			-o sof-${fw_name}.ri
 			-p sof-${fw_name}.ldc
 			-m ${fw_name}
+			-n ${SOF_VERSION}
 			-k ${RIMAGE_PRIVATE_KEY}
 			-i ${RIMAGE_IMR_TYPE}
 			${RIMAGE_MOD_OFFSET_FLAG}

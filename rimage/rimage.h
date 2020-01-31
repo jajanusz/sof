@@ -6,6 +6,7 @@
 #ifndef __RIMAGE_H__
 #define __RIMAGE_H__
 
+#include "css.h"
 #include "elf.h"
 
 #include <stdint.h>
@@ -108,6 +109,7 @@ struct image {
 	uint32_t image_end;/* module end, equal to output image size */
 	int meu_offset;
 	int xcc_mod_offset;
+	struct fw_version version;
 
 	/* SHA 256 & 384 */
 	const char *key_name;

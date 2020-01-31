@@ -55,6 +55,8 @@ endif()
 # for SOF_BUILD
 include(${CMAKE_CURRENT_LIST_DIR}/version-build-counter.cmake)
 
+set(SOF_VERSION "${SOF_MAJOR}.${SOF_MINOR}.${SOF_MICRO}.${SOF_BUILD}")
+
 function(sof_check_version_h)
 	string(CONCAT header_content
 		"#define SOF_MAJOR ${SOF_MAJOR}\n"

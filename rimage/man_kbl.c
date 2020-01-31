@@ -6,7 +6,6 @@
 #include "cse.h"
 #include "plat_auth.h"
 #include "manifest.h"
-#include <version.h>
 
 /*
  * TODO: check if all platform for 1.5 are the same base and length.
@@ -38,10 +37,6 @@ struct fw_image_manifest_v1_5 kbl_manifest = {
 			.preload_page_count	= 0,
 			.fw_image_flags	= SOF_MAN_FW_HDR_FLAGS,
 			.feature_mask	= SOF_MAN_FW_HDR_FEATURES,
-			.major_version	= SOF_MAJOR,
-			.minor_version	= SOF_MINOR,
-			.hotfix_version	= 0,
-			.build_version	= SOF_BUILD,
 			.load_offset	= 0,
 			.hw_buf_base_addr	= KBL_HARDWARE_BUFFER_BASE,
 			.hw_buf_length		= KBL_HARDWARE_BUFFER_LEN
