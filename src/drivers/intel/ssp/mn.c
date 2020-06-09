@@ -242,10 +242,21 @@ out:
 
 void mn_release_mclk(uint32_t mclk_id)
 {
+	uint32_t mdivc;
 	struct mn *mn = mn_get();
 
 	spin_lock(&mn->lock);
 	mn->mclk_sources_used[mclk_id] = false;
+
+	if (!is_mclk_source_in_use()) {
+		mdivc = mn_reg_read(MN_MDIVCTRL, mclk_id);
+
+		mdivc &= ~MN_MDIVCTRL_M_DIV_ENABLE;
+		mdivc &= ~MCDSS(3);
+
+		mn_reg_write(MN_MDIVCTRL, mclk_id, mdivc);
+	}
+
 	platform_shared_commit(mn, sizeof(*mn));
 	spin_unlock(&mn->lock);
 }
