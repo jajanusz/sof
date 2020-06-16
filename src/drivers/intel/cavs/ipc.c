@@ -36,6 +36,9 @@
 
 #endif
 
+/* 8k cycles per systick */
+#define CAVS_IPC_TASK_CYCLES_BUDGET 8000
+
 /* 8fa1d42f-bc6f-464b-867f-547af08834da */
 DECLARE_SOF_UUID("ipc-task", ipc_task_uuid, 0x8fa1d42f, 0xbc6f, 0x464b,
 		 0x86, 0x7f, 0x54, 0x7a, 0xf0, 0x88, 0x34, 0xda);
@@ -295,8 +298,10 @@ int platform_ipc_init(struct ipc *ipc)
 	ipc_set_drvdata(ipc, NULL);
 
 	/* schedule */
-	schedule_task_init_edf(&ipc->ipc_task, SOF_UUID(ipc_task_uuid),
-			       &ipc_task_ops, ipc, 0, 0);
+	schedule_task_init_edf_with_budget(&ipc->ipc_task,
+					   SOF_UUID(ipc_task_uuid),
+					   &ipc_task_ops, ipc, 0, 0,
+					   CAVS_IPC_TASK_CYCLES_BUDGET);
 
 	/* configure interrupt */
 	irq = interrupt_get_irq(PLATFORM_IPC_INTERRUPT,
