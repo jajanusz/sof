@@ -8,6 +8,7 @@
 #include <sof/lib/alloc.h>
 #include <sof/lib/cpu.h>
 #include <sof/lib/memory.h>
+#include <sof/math/numbers.h>
 #include <sof/platform.h>
 #include <sof/schedule/ll_schedule.h>
 #include <sof/schedule/ll_schedule_domain.h>
@@ -26,13 +27,30 @@ struct timer_domain {
 
 const struct ll_schedule_domain_ops timer_domain_ops;
 
+static uint64_t last_time = 0;
+static uint32_t missed = 0;
+
 static inline void timer_report_delay(int id, uint64_t delay)
 {
+	uint64_t curtime = platform_timer_get(timer_get()) /
+				clock_ms_to_ticks(PLATFORM_DEFAULT_CLOCK, 1);
 	uint32_t ll_delay_us = (delay * 1000) /
 				clock_ms_to_ticks(PLATFORM_DEFAULT_CLOCK, 1);
+	uint32_t diff = ABS(last_time - curtime);
 
-	tr_err(&ll_tr, "timer_report_delay(): timer %d delayed by %d uS %u ticks",
-	       id, ll_delay_us, (uint32_t)delay);
+	if (diff > 10) {
+		tr_err(&ll_tr, "timer_report_delay(): timer %d delayed by %d uS %u ticks",
+	       		id, ll_delay_us, (uint32_t)delay);
+		tr_err(&ll_tr, "timer_report_delay(): timer %d skipped %d msgs",
+	       		id, ll_delay_us, missed);
+		
+		last_time = curtime;
+		missed = 0;
+	} else {
+		++missed;
+	}
+
+	
 
 	/* Fix compile error when traces are disabled */
 	(void)ll_delay_us;
