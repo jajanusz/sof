@@ -283,19 +283,21 @@ static void demux_s32le(struct audio_stream *sink,
 {
 	int64_t sample;
 	int32_t *dst;
-	uint32_t dst_idx;
+	//uint32_t dst_idx;
 	uint8_t i;
 	uint8_t out_ch;
 
 	for (i = 0; i < frames; i++) {
-		for (out_ch = 0; out_ch < sink->channels; out_ch++) {
+		const uint32_t chnls = sink->channels;
+		const uint32_t ofs = i * chnls;
+		dst = audio_stream_write_frag_s32(sink, ofs + out_ch);
+		for (out_ch = 0; out_ch < chnls; out_ch++) {
 			sample = calc_sample_s32le(source,
-						   i * source->channels,
+						   ofs,
 						   data->mask[out_ch]);
 
 			/* saturate to 32 bits */
-			dst_idx = i * sink->channels + out_ch;
-			dst = audio_stream_write_frag_s32(sink, dst_idx);
+			++dst;
 			*dst = sat_int32(sample);
 		}
 	}
